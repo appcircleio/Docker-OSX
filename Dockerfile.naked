@@ -30,7 +30,7 @@
 #       docker run -it --device /dev/kvm -p 50922:10022 -v ${PWD}/mac_hdd_ng.img:/image -e "DISPLAY=${DISPLAY:-:0.0}" -v /tmp/.X11-unix:/tmp/.X11-unix docker-osx:naked
 # 
 
-FROM sickcodes/docker-osx:latest
+FROM europe-west1-docker.pkg.dev/appcircle/docker-registry/docker-osx:macos
 
 MAINTAINER 'https://twitter.com/sickcodes' <https://sick.codes>
 
@@ -46,7 +46,7 @@ ARG RANKMIRRORS
 ARG MIRROR_COUNTRY=US
 ARG MIRROR_COUNT=10
 RUN if [[ "${RANKMIRRORS}" ]]; then { pacman -Sy wget --noconfirm || pacman -Syu wget --noconfirm ; } \
-        ; wget -O ./rankmirrors "https://raw.githubusercontent.com/sickcodes/Docker-OSX/master/rankmirrors" \
+        ; wget -O ./rankmirrors "https://raw.githubusercontent.com/appcircleio/Docker-OSX/master/rankmirrors" \
         ; wget -O- "https://www.archlinux.org/mirrorlist/?country=${MIRROR_COUNTRY:-US}&protocol=https&use_mirror_status=on" \
         | sed -e 's/^#Server/Server/' -e '/^#/d' \
         | head -n "$((${MIRROR_COUNT:-10}+1))" \
@@ -60,9 +60,9 @@ RUN if [[ "${RANKMIRRORS}" ]]; then { pacman -Sy wget --noconfirm || pacman -Syu
 # For taking screenshots of the Xfvb screen, useful during development.
 ARG SCROT
 
-RUN pacman -Syu xorg-server-xvfb wget xterm xorg-xhost xorg-xrandr sshpass --noconfirm \
+RUN pacman -Sy xorg-server-xvfb wget xterm xorg-xhost xorg-xrandr sshpass --noconfirm \
     && if [[ "${SCROT}" ]]; then \
-        pacman -Syu scrot base-devel --noconfirm \
+        pacman -Sy scrot base-devel --noconfirm \
         && git clone --recurse-submodules --depth 1 https://github.com/stolk/imcat.git \
         && cd imcat \
         && make \
