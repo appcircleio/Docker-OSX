@@ -69,7 +69,7 @@ ARG MIRROR_COUNT=10
 
 RUN if [[ "${RANKMIRRORS}" ]]; then \
         { pacman -Sy wget --noconfirm || pacman -Syu wget --noconfirm ; } \
-        ; wget -O ./rankmirrors "https://raw.githubusercontent.com/sickcodes/Docker-OSX/master/rankmirrors" \
+        ; wget -O ./rankmirrors "https://raw.githubusercontent.com/appcircleio/Docker-OSX/master/rankmirrors" \
         ; wget -O- "https://www.archlinux.org/mirrorlist/?country=${MIRROR_COUNTRY:-US}&protocol=https&use_mirror_status=on" \
         | sed -e 's/^#Server/Server/' -e '/^#/d' \
         | head -n "$((${MIRROR_COUNT:-10}+1))" \
@@ -140,7 +140,7 @@ RUN touch enable-ssh.sh \
 
 # RUN yes | sudo pacman -Syu qemu libvirt dnsmasq virt-manager bridge-utils edk2-ovmf netctl libvirt-dbus --overwrite --noconfirm
 
-RUN yes | sudo pacman -Syu bc qemu libvirt dnsmasq virt-manager bridge-utils openresolv jack2 ebtables edk2-ovmf netctl libvirt-dbus wget --overwrite --noconfirm \
+RUN yes | sudo pacman -Syu bc qemu-base libvirt dnsmasq virt-manager bridge-utils openresolv jack2 ebtables edk2-ovmf netctl libvirt-dbus wget --overwrite --noconfirm \
     && yes | sudo pacman -Scc
 
 WORKDIR /home/arch/OSX-KVM
@@ -162,7 +162,7 @@ RUN if [[ "${LINUX}" == true ]]; then \
 
 # optional --build-arg to change branches for testing
 ARG BRANCH=master
-ARG REPO='https://github.com/sickcodes/Docker-OSX.git'
+ARG REPO='https://github.com/appcircleio/Docker-OSX.git'
 # RUN git clone --recurse-submodules --depth 1 --branch "${BRANCH}" "${REPO}"
 RUN git clone --recurse-submodules --depth 1 --branch "${BRANCH}" "${REPO}"
 
@@ -223,6 +223,7 @@ ENV SUPERMIN_KERNEL_VERSION=5.12.14-arch1-1
 ENV KERNEL_PACKAGE_URL=https://archive.archlinux.org/packages/l/linux/linux-5.12.14.arch1-1-x86_64.pkg.tar.zst
 ENV KERNEL_HEADERS_PACKAGE_URL=https://archive.archlinux.org/packages/l/linux/linux-headers-5.12.14.arch1-1-x86_64.pkg.tar.zst
 ENV LIBGUESTFS_PACKAGE_URL=https://archive.archlinux.org/packages/l/libguestfs/libguestfs-1.44.1-6-x86_64.pkg.tar.zst
+ENV YARA_PACKAGE_URL=https://archive.archlinux.org/packages/y/yara/yara-4.1.3-1-x86_64.pkg.tar.zst
 
 # fix ad hoc errors from using the arch museum to get libguestfs
 RUN sudo sed -i -e 's/^\#RemoteFileSigLevel/RemoteFileSigLevel/g' /etc/pacman.conf
@@ -231,6 +232,7 @@ RUN sudo pacman -Syy \
     && sudo pacman -Rns linux --noconfirm \
     ; sudo pacman -S mkinitcpio --noconfirm \
     && sudo pacman -U "${KERNEL_PACKAGE_URL}" --noconfirm || exit 1 \
+    && sudo pacman -U "${YARA_PACKAGE_URL}" --noconfirm || exit 1 \
     && sudo pacman -U "${LIBGUESTFS_PACKAGE_URL}" --noconfirm || exit 1 \
     && rm -rf /var/tmp/.guestfs-* \
     && yes | sudo pacman -Scc \
@@ -255,8 +257,8 @@ ARG STOCK_UUID=007076A6-F2A2-4461-BBE5-BAD019F8025A
 ARG STOCK_MAC_ADDRESS=00:0A:27:00:00:00
 ARG STOCK_WIDTH=1920
 ARG STOCK_HEIGHT=1080
-ARG STOCK_MASTER_PLIST_URL=https://raw.githubusercontent.com/sickcodes/osx-serial-generator/master/config-custom.plist
-ARG STOCK_MASTER_PLIST_URL_NOPICKER=https://raw.githubusercontent.com/sickcodes/osx-serial-generator/master/config-nopicker-custom.plist
+ARG STOCK_MASTER_PLIST_URL=https://raw.githubusercontent.com/appcircleio/osx-serial-generator/master/config-custom.plist
+ARG STOCK_MASTER_PLIST_URL_NOPICKER=https://raw.githubusercontent.com/appcircleio/osx-serial-generator/master/config-nopicker-custom.plist
 ARG STOCK_BOOTDISK=/home/arch/OSX-KVM/OpenCore/OpenCore.qcow2
 ARG STOCK_BOOTDISK_NOPICKER=/home/arch/OSX-KVM/OpenCore/OpenCore-nopicker.qcow2
 
@@ -323,7 +325,7 @@ ENV IMAGE_FORMAT=qcow2
 
 ENV KVM='accel=kvm:tcg'
 
-ENV MASTER_PLIST_URL="https://raw.githubusercontent.com/sickcodes/osx-serial-generator/master/config-custom.plist"
+ENV MASTER_PLIST_URL="https://raw.githubusercontent.com/appcircleio/osx-serial-generator/master/config-custom.plist"
 
 # ENV NETWORKING=e1000-82545em
 ENV NETWORKING=vmxnet3
