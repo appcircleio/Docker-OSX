@@ -60,9 +60,9 @@ RUN if [[ "${RANKMIRRORS}" ]]; then { pacman -Sy wget --noconfirm || pacman -Syu
 # For taking screenshots of the Xfvb screen, useful during development.
 ARG SCROT
 
-RUN pacman -Sy xorg-server-xvfb wget xterm xorg-xhost xorg-xrandr sshpass --noconfirm \
+RUN pacman -Syu xorg-server-xvfb wget xterm xorg-xhost xorg-xrandr sshpass --noconfirm \
     && if [[ "${SCROT}" ]]; then \
-        pacman -Sy scrot base-devel --noconfirm \
+        pacman -Syu scrot base-devel --noconfirm \
         && git clone --recurse-submodules --depth 1 https://github.com/stolk/imcat.git \
         && cd imcat \
         && make \
