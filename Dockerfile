@@ -57,6 +57,9 @@ LABEL maintainer='https://twitter.com/sickcodes <https://sick.codes>'
 SHELL ["/bin/bash", "-c"]
 
 RUN echo 'Server=https://archive.archlinux.org/repos/2022/04/21/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+RUN cp /etc/pacman.conf /etc/pacman.conf.old && \
+  sed -i 's/Required DatabaseOptional/Optional TrustAll/g' /etc/pacman.conf && \
+  { diff /etc/pacman.conf.old /etc/pacman.conf || true; }
 RUN yes | pacman -Syyuu
 
 # change disk size here or add during build, e.g. --build-arg VERSION=10.14.5 --build-arg SIZE=50G
